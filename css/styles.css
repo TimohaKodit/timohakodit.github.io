@@ -1,0 +1,771 @@
+:root {
+    --primary-yellow: #FFC000; /* Цвет кнопки Каталог */
+    --text-dark: #333;
+    --text-light: #fff;
+    --card-bg: #fff;
+    --section-separator: #ccc;
+    --add-btn-bg: #ff7d00; /* Оранжевый цвет кнопки добавления */
+    --shadow-light: rgba(0, 0, 0, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f5f5f7; /* Светло-серый фон страницы */
+    color: var(--text-dark);
+}
+
+.header {
+    background-color: var(--card-bg);
+    padding: 10px 0;
+    border-bottom: 1px solid var(--section-separator);
+    position: sticky; 
+    top: 0;
+    z-index: 100;
+}
+
+.header-container {
+    width: 100%; 
+    margin: 0 auto;
+    padding: 0 10px; 
+    display: flex;
+    justify-content: space-between; 
+    gap: 10px;
+}
+
+.header-buttons { /* НОВЫЙ КОНТЕЙНЕР ДЛЯ КНОПОК */
+    display: flex;
+    gap: 5px; /* Маленький отступ между Каталогом и Корзиной */
+}
+
+/* --- Стили для Панели поиска и Каталога --- */
+
+.search-bar {
+    position: relative;
+    flex-grow: 1;
+    max-width: 600px;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 10px 15px 10px 40px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    font-size: 16px;
+}
+
+.catalog-btn {
+    background-color: var(--primary-yellow);
+    color: var(--text-dark);
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 15px; 
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+    white-space: nowrap; 
+}
+
+.catalog-btn:hover {
+    background-color: #f7b300;
+}
+
+/* Стили для кнопки Корзины */
+.cart-btn {
+    background-color: #e0e0e0; /* Более нейтральный цвет */
+    color: var(--text-dark);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px; /* Чуть меньше padding */
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.cart-btn:hover {
+    background-color: #ccc;
+}
+/* Скрываем текст "Каталог" на очень узких экранах, оставляя только иконку */
+@media (max-width: 380px) {
+    .catalog-btn span { 
+        display: none;
+    }
+    .catalog-btn {
+        padding: 8px 12px; /* Делаем кнопку квадратной */
+    }
+}
+
+/* --- Основное содержимое --- */
+
+.main-content {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+/* --- Секция "Отзывы" (Reviews Banner) --- */
+
+.reviews-banner {
+    background-color: #1c1c1e;
+    color: var(--text-light);
+    border-radius: 10px;
+    height: 140px; /* УМЕНЬШЕННАЯ ВЫСОТА БАННЕРА (было 180px) */
+    margin-bottom: 20px;
+    padding: 15px; 
+    display: flex;
+    align-items: flex-end; /* Контент прижат к нижней части */
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.1));
+}
+
+.banner-title {
+    font-size: 3rem; /* Чуть меньше шрифт */
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.banner-subtitle {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+.banner-button {
+    background-color: var(--card-bg);
+    color: var(--text-dark);
+    border: none;
+    border-radius: 5px;
+    padding: 8px 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+.hidden {
+    display: none !important;
+}
+
+/* --- Секции Товаров (Динамические) --- */
+
+.product-section {
+    margin-bottom: 40px;
+    /* Используем позиционирование для заголовка и ссылки */
+    position: relative; 
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.view-all-link {
+    font-size: 1rem;
+    color: #007aff;
+    text-decoration: none;
+    position: absolute; /* Позиционируем относительно секции */
+    right: 0;
+    top: 5px;
+    font-weight: 500;
+}
+
+/* --- ИЗМЕНЕНИЕ: Настройка сетки для 2-3 товаров --- */
+.product-grid {
+    display: grid;
+    /* Базовая настройка для мобильных: 1 колонка, но с минимальной шириной 250px, чтобы 
+       на широких телефонах могло поместиться 2, если ширина экрана позволяет */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
+    gap: 20px;
+}
+
+/* --- Карточка Товара --- */
+
+.product-card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 20px;
+    /* Уменьшим высоту, чтобы не было пустых белых областей, если нет картинки */
+    min-height: 200px; 
+    box-shadow: 0 4px 10px var(--shadow-light);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-name {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+    padding-right: 50px; 
+}
+
+.product-price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.product-price {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--text-dark);
+}
+
+.add-to-cart-btn {
+    background-color: var(--add-btn-bg);
+    color: var(--text-light);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s;
+}
+
+.add-to-cart-btn:hover {
+    background-color: #e66f00;
+}
+
+.error-message {
+    color: red;
+    font-weight: bold;
+    text-align: center;
+    padding: 20px;
+}
+
+#loading-message {
+    text-align: center;
+    padding: 20px;
+    color: #555;
+}
+
+/* --- Стили для шапки и кнопки "Назад" --- */
+.back-btn {
+    background: none;
+    border: none;
+    color: #007aff;
+    font-size: 16px;
+    padding: 5px 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+/* Скрываем элементы главной страницы, если активна страница товара */
+#detail-view:not(.hidden) ~ header .header-container #home-header-controls {
+    display: none !important;
+}
+
+/* --- Стили для Страницы Товара (detail-view) --- */
+
+.product-details-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.product-image {
+    width: 80%;
+    max-width: 300px;
+    height: auto;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    background-color: #eee;
+}
+
+.detail-title {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.detail-description {
+    color: #666;
+    font-size: 0.95rem;
+    text-align: center;
+    margin: 15px auto;
+    max-width: 400px;
+}
+
+.options-selection {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    background-color: var(--card-bg);
+}
+
+.options-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 5px 0;
+}
+
+.option-btn { /* Стиль для кнопок опций */
+    display: inline-block;
+    padding: 8px 12px;
+    margin: 0; 
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: #fff;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.option-btn.selected {
+    background-color: #e0e0e0;
+    border-color: #007aff;
+    font-weight: bold;
+}
+
+.detail-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-top: 1px solid #eee;
+    background-color: var(--card-bg);
+    position: sticky; 
+    bottom: 0;
+    z-index: 50;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.detail-price-box {
+    display: flex;
+    flex-direction: column;
+    font-size: 1rem;
+}
+
+.detail-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--text-dark);
+}
+
+#detail-add-to-cart-btn {
+    padding: 12px 25px;
+    background-color: var(--add-btn-bg);
+    color: var(--text-light);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+#detail-add-to-cart-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+.empty-cart-message {
+    text-align: center;
+    color: #999;
+    padding: 50px 0;
+}
+
+.cart-summary-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 50;
+    background-color: var(--card-bg);
+    padding: 15px 20px;
+    /* Убедитесь, что отступы соответствуют вашему main-content */
+    border-top: 1px solid #eee;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 15px;
+}
+
+.total-price {
+    font-weight: bold;
+    color: var(--text-dark);
+}
+
+#checkout-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: var(--add-btn-bg); /* Используем ваш оранжевый цвет */
+    color: var(--text-light);
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#checkout-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Стили для отдельной карточки товара в корзине */
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.cart-item-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-grow: 1;
+}
+
+.cart-item-name {
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.cart-item-options {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 5px;
+}
+
+.cart-item-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.cart-item-price {
+    font-weight: bold;
+    white-space: nowrap;
+    min-width: 70px; 
+    text-align: right;
+}
+
+.remove-item-btn {
+    background: none;
+    border: none;
+    color: #ff3b30; /* Красный цвет удаления */
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+.checkout-form {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px var(--shadow-light);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.checkout-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--text-dark);
+}
+
+.checkout-form input[type="text"],
+.checkout-form input[type="tel"],
+.checkout-form input[type="email"],
+.checkout-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box; /* ВАЖНО: включает padding в общую ширину */
+    transition: border-color 0.2s;
+}
+
+.checkout-form input:focus,
+.checkout-form textarea:focus {
+    border-color: var(--add-btn-bg); /* Цвет фокуса - ваш оранжевый */
+    outline: none;
+}
+
+.checkout-form textarea {
+    resize: vertical;
+}
+
+#submit-order-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: var(--add-btn-bg);
+    color: var(--text-light);
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#submit-order-btn:hover {
+    background-color: #e66f00; /* Темнее оранжевый */
+}
+/* Секция "Ваш заказ" */
+.form-section-summary {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    border: 1px solid #eee;
+}
+
+.form-section-summary h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+#checkout-items-summary {
+    border-top: 1px dashed #ddd;
+    padding-top: 10px;
+    margin-bottom: 15px;
+}
+
+.checkout-item-line {
+    font-size: 0.95rem;
+    color: #555;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.checkout-item-line .item-price {
+    font-weight: 500;
+}
+
+.summary-total {
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+    margin-top: 10px;
+    text-align: right;
+}
+
+/* Стили для выбора способа получения */
+.delivery-options {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.delivery-options input[type="radio"] {
+    /* Скрываем стандартный вид радиокнопки для стилизации */
+    display: none;
+}
+
+.delivery-options label {
+    display: inline-block;
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 400;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.delivery-options input[type="radio"]:checked + label {
+    background-color: var(--primary-yellow); /* Используем ваш желтый цвет */
+    border-color: var(--primary-yellow);
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+/* МОДАЛЬНОЕ ОКНО ДЛЯ КАТЕГОРИЙ */
+/* ========================================================== */
+
+.modal {
+    position: fixed;
+    z-index: 1000; /* Выше всего остального */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4); /* Полупрозрачный фон */
+    display: flex; /* Для центрирования */
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background-color: var(--tg-theme-bg-color, #f0f0f0);
+    margin: 15% auto; /* 15% сверху и центрирование */
+    padding: 20px;
+    border-radius: 12px;
+    width: 90%; /* Можно настроить под размер Mini App */
+    max-width: 400px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--tg-theme-hint-color, #999999);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.modal-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--tg-theme-text-color, #000);
+}
+
+.close-modal-btn {
+    color: var(--tg-theme-hint-color, #999999);
+    font-size: 24px;
+    font-weight: bold;
+    border: none;
+    background: none;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close-modal-btn:hover,
+.close-modal-btn:focus {
+    color: var(--tg-theme-text-color, #000);
+}
+
+.categories-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.category-item {
+    padding: 12px;
+    background-color: var(--tg-theme-secondary-bg-color, #fff);
+    color: var(--tg-theme-text-color, #000);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s;
+    font-weight: 500;
+}
+
+.category-item:hover {
+    background-color: var(--tg-theme-button-color, #0088cc);
+    color: var(--tg-theme-button-text-color, #fff);
+}
+
+.catalog-dropdown-container {
+    position: relative; /* Важно, чтобы дропдаун позиционировался относительно этой кнопки */
+}
+
+/* 2. Стили для выпадающего меню */
+.category-dropdown {
+    position: absolute;
+    top: 100%; /* Начинается прямо под кнопкой */
+    left: 0;
+    z-index: 1000; /* Должен быть поверх всего контента */
+    
+    /* Стили внешнего вида */
+    background-color: var(--card-bg); /* Белый или светлый фон */
+    border: 1px solid var(--section-separator);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 10px 0;
+    min-width: 250px;
+    max-height: 400px; /* Ограничиваем высоту для скроллинга */
+    overflow-y: auto; /* Добавляем прокрутку, если категорий много */
+
+    /* Анимация: Скрываем и делаем плавный переход */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px); /* Небольшой сдвиг вниз для эффекта "выезда" */
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+}
+
+/* 3. Класс для показа */
+.category-dropdown.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0); /* Возвращаем на место */
+}
+
+/* 4. Стили списка категорий */
+.categories-list-dropdown {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.categories-list-dropdown .category-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.categories-list-dropdown .category-item:hover {
+    background-color: #f0f0f0; /* Легкое выделение при наведении */
+}
+.option-btn.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    border-color: #e0e0e0;
+    pointer-events: none; /* Гарантирует, что клик не пройдет */
+}
+
+/* ========================================================== */
+/* --- НОВЫЕ ПРАВИЛА: ФИКСИРОВАННОЕ КОЛИЧЕСТВО КОЛОНОК (2-3) --- */
+/* ========================================================== */
+
+/* Экраны средней ширины (Планшеты/Широкие телефоны): 2 колонки */
+@media (min-width: 600px) {
+    .product-grid {
+        /* Принудительно 2 колонки одинаковой ширины */
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Экраны большой ширины (Десктопы/Широкие планшеты): 3 колонки */
+@media (min-width: 992px) {
+    .product-grid {
+        /* Принудительно 3 колонки одинаковой ширины (установка верхнего предела) */
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

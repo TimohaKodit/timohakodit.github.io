@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интернет-магазин Apple</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <button class="back-btn hidden" id="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Назад
+            </button>
+            
+            <div id="home-header-controls" style="display: flex; flex-grow: 1; gap: 10px;">
+                <div class="search-bar">
+                    <input type="text" placeholder="Я ищу..." id="search-input">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                </div>
+                <div class="header-buttons">
+                    <button class="catalog-btn" id="catalog-btn">
+                        <i class="fa-solid fa-bars"></i> Каталог
+                    </button>
+                    <div class="cart-icon-container">
+                        <button class="cart-btn" id="cart-btn">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                            <span id="cart-counter" class="cart-badge hidden">0</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="category-dropdown" class="category-dropdown"> <div class="dropdown-header">
+                <h4>Категории</h4>
+            </div>
+            
+            <ul id="categories-list-dropdown" class="categories-list-dropdown">
+                </ul>
+
+            <p id="dropdown-loading-message" class="loading-message hidden">Загрузка...</p>
+            
+        </div>
+    </header>
+
+    <main class="main-content">
+        
+        <div id="home-view">
+            <section class="reviews-banner">
+                <div class="banner-content">
+                    <h1 class="banner-title">Отзывы</h1>
+                    <p class="banner-subtitle">Отзывы о нашем магазине</p>
+                    <button class="banner-button">Подробнее</button>
+                </div>
+            </section>
+
+            <div id="product-sections-container">
+                <p id="loading-message">Загрузка товаров...</p>
+            </div>
+        </div>
+
+        <div id="detail-view" class="hidden">
+            <div id="product-detail-container">
+                </div>
+        </div>
+        
+        <div id="cart-view" class="hidden">
+            <h2 class="section-title" style="margin-top: 0;">Ваша корзина</h2>
+            
+            <div id="cart-items-container">
+                <p class="empty-cart-message">Корзина пуста.</p>
+            </div>
+
+            <div class="cart-summary-footer">
+                <div class="summary-row">
+                    <span>Итого:</span>
+                    <span id="cart-total-price" class="total-price">0 ₽</span>
+                </div>
+                <button id="checkout-btn" disabled>Перейти к оформлению</button>
+            </div>
+        </div>
+        
+        <div id="checkout-form-view" class="hidden">
+            <h2 class="section-title" style="margin-top: 0;">Оформление заказа</h2>
+            
+            <form id="checkout-form" class="checkout-form">
+                
+                <div class="form-section-summary">
+                    <h3>Ваш заказ</h3>
+                    <div id="checkout-items-summary">
+                        </div>
+                    <p class="summary-total">
+                        Общая сумма: <span id="checkout-total-price">0 ₽</span>
+                    </p>
+                </div>
+                <div class="form-group form-group-delivery">
+                    <label>Способ получения*</label>
+                    <div class="delivery-options">
+                        <input type="radio" id="delivery" name="delivery_method" value="delivery" checked>
+                        <label for="delivery">Доставка</label>
+                        
+                        <input type="radio" id="pickup" name="delivery_method" value="pickup">
+                        <label for="pickup">Самовывоз</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="fio">ФИО*</label>
+                    <input type="text" id="fio" name="fio" required placeholder="Иванов Иван Иванович">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Номер телефона*</label>
+                    <input type="tel" id="phone" name="phone" required placeholder="+7 (XXX) XXX-XX-XX">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Почта*</label>
+                    <input type="email" id="email" name="email" required placeholder="example@mail.com">
+                </div>
+                <div class="form-group">
+                    <label for="telegram-username">Никнейм в Telegram</label>
+                    <input type="text" id="telegram-username" name="telegram_username" placeholder="@your_nickname">
+                </div>
+                
+                <div class="form-group" id="address-group"> <label for="address">Адрес доставки*</label>
+                    <textarea id="address" name="address" rows="3" placeholder="Город, улица, дом, квартира"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="comment">Комментарии к заказу</label>
+                    <textarea id="comment" name="comment" rows="3" placeholder="Особые пожелания или детали доставки"></textarea>
+                </div>
+
+                <button type="submit" id="submit-order-btn">Подтвердить заказ</button>
+            </form>
+
+        </div>
+        
+    </main>
+
+    <script src="js/scripts.js"></script>
+</body>
+</html>
+
+
+<!-- <!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интернет-магазин Apple</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="search-bar">
+                <input type="text" placeholder="Я ищу...">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            </div>
+            
+            <div class="header-buttons"> 
+                <button class="catalog-btn">
+                    <i class="fa-solid fa-bars"></i>
+                    Каталог
+                </button>
+                <button class="cart-btn"> 
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="reviews-banner">
+            <div class="banner-content">
+                <h1 class="banner-title">Отзывы</h1>
+                <p class="banner-subtitle">Отзывы о нашем магазине</p>
+                <button class="banner-button">Подробнее</button>
+            </div>
+        </section>
+
+        <div id="product-sections-container">
+            <p id="loading-message">Загрузка товаров...</p>
+        </div>
+    </main>
+
+    <script src="js/scripts.js"></script>
+</body>
+</html> -->
