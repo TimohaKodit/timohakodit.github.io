@@ -1,324 +1,8 @@
-// document.addEventListener('DOMContentLoaded', () => {
-//     const API_BASE_URL = 'http://127.0.0.1:8888/api/v1';
-    
-//     // Элементы контейнеров
-//     const homeView = document.getElementById('home-view');
-//     const detailView = document.getElementById('detail-view');
-//     const productSectionsContainer = document.getElementById('product-sections-container');
-//     const productDetailContainer = document.getElementById('product-detail-container');
-//     const backBtn = document.querySelector('.back-btn');
-
-//     let allProducts = []; // Полный список всех товаров со всеми опциями
-//     let currentItemVariants = []; // Варианты текущего просматриваемого товара
-//     let selectedOptions = { memory: null, color: null };
-
-//     // --- УТИЛИТЫ ---
-
-//     function formatPrice(price) {
-//         return new Intl.NumberFormat('ru-RU', {
-//             style: 'currency',
-//             currency: 'RUB',
-//             minimumFractionDigits: 0
-//         }).format(price);
-//     }
-    
-//     // --- ПЕРЕКЛЮЧЕНИЕ ВИДОВ ---
-    
-//     function showHomePage() {
-//         homeView.classList.remove('hidden');
-//         detailView.classList.add('hidden');
-//         backBtn.classList.add('hidden');
-//     }
-
-//     function showDetailPage() {
-//         homeView.classList.add('hidden');
-//         detailView.classList.remove('hidden');
-//         backBtn.classList.remove('hidden');
-//     }
-    
-//     // --- ГЛАВНАЯ СТРАНИЦА: ГЕНЕРАЦИЯ КАРТОЧЕК ---
-    
-//     function createProductCard(item) {
-//     const card = document.createElement('div');
-//     // Card сама по себе теперь кликабельная
-//     card.className = 'product-card';
-
-//     const formattedPrice = formatPrice(item.price);
-//     const baseName = item.name;
-    
-//     // HTML карточки: БЕЗ ТЕГА <a>
-//     card.innerHTML = `
-//         <p class="product-name">${baseName}</p>
-//         <div class="product-price-row">
-//             <span class="product-price">от ${formattedPrice}</span>
-//             <button class="add-to-cart-btn" data-base-name="${baseName}">+</button>
-//         </div>
-//     `;
-
-//     // Единый обработчик кликов для всей карточки
-//     card.addEventListener('click', (e) => {
-//         const target = e.target;
-        
-//         if (target.classList.contains('add-to-cart-btn')) {
-//             // 1. Клик по кнопке "+": Интенция "Добавить в корзину" (но сначала выбираем опции)
-//             e.preventDefault();
-//             e.stopPropagation(); // Останавливаем, чтобы не сработал клик по карточке
-            
-//             const name = target.dataset.baseName;
-            
-//             // Переход на детальную страницу для выбора опций
-//             renderProductDetail(name);
-//             showDetailPage();
-            
-//             console.log(`Кнопка "+" нажата: перенаправление на выбор опций для ${name}.`);
-        
-//         } else {
-//             // 2. Клик по остальной части карточки: Интенция "Посмотреть детали"
-//             e.preventDefault();
-//             const name = card.querySelector('.product-name').textContent;
-            
-//             // Переход на детальную страницу
-//             renderProductDetail(name);
-//             showDetailPage();
-            
-//             console.log(`Клик по товару: перенаправление на страницу ${name}.`);
-//         }
-//     });
-    
-//     return card;
-// }
-
-//     // --- СТРАНИЦА ТОВАРА: ЛОГИКА ОПЦИЙ И ЦЕНЫ ---
-    
-//     function updatePriceAndButton() {
-//         // Находим точный товар, который соответствует текущему выбору
-//         const selectedItem = currentItemVariants.find(item => 
-//             (selectedOptions.memory === null || item.memory === selectedOptions.memory) &&
-//             (selectedOptions.color === null || item.color === selectedOptions.color)
-//         );
-
-//         const priceSpan = document.getElementById('detail-current-price');
-//         const finalAddBtn = document.getElementById('detail-add-to-cart-btn');
-        
-//         // Проверяем, нужны ли вообще опции (если нет, считаем их выбранными)
-//         const memoryRequired = document.querySelectorAll('#detail-memory-options .option-btn').length > 0;
-//         const colorRequired = document.querySelectorAll('#detail-color-options .option-btn').length > 0;
-        
-//         let allSelected = true;
-//         if (memoryRequired && selectedOptions.memory === null) allSelected = false;
-//         if (colorRequired && selectedOptions.color === null) allSelected = false;
-
-//         if (selectedItem) {
-//             priceSpan.textContent = formatPrice(selectedItem.price);
-//             finalAddBtn.dataset.finalItemId = selectedItem.id;
-//         } else {
-//             priceSpan.textContent = 'Н/Д';
-//             finalAddBtn.dataset.finalItemId = '';
-//             allSelected = false;
-//         }
-
-//         finalAddBtn.disabled = !allSelected;
-//     }
-
-//     // --- СТРАНИЦА ТОВАРА: СОЗДАНИЕ КНОПОК ОПЦИЙ ---
-    
-//     function createOptionButtons(property, containerId) {
-//         const container = document.getElementById(containerId);
-//         container.innerHTML = '';
-        
-//         const uniqueOptions = [...new Set(currentItemVariants.map(item => item[property]))]
-//                                 .filter(opt => opt && opt !== '-');
-
-//         if (uniqueOptions.length === 0) {
-//             // Если опций нет, скрываем весь блок
-//             const optionGroup = container.closest('.option-group');
-//             if (optionGroup) optionGroup.classList.add('hidden');
-//             return;
-//         }
-        
-//         const optionGroup = container.closest('.option-group');
-//         if (optionGroup) optionGroup.classList.remove('hidden');
-
-//         uniqueOptions.forEach(option => {
-//             const button = document.createElement('span');
-//             button.className = `option-btn ${property}-option-btn`;
-//             button.textContent = option;
-            
-//             button.addEventListener('click', () => {
-//                 selectedOptions[property] = option;
-                
-//                 container.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
-//                 button.classList.add('selected');
-                
-//                 updatePriceAndButton();
-//             });
-//             container.appendChild(button);
-//         });
-//     }
-    
-//     // --- СТРАНИЦА ТОВАРА: ПОСТРОЕНИЕ РАЗМЕТКИ ---
-    
-//     function renderProductDetail(baseName) {
-//         // 1. Фильтруем варианты для текущего товара
-//         currentItemVariants = allProducts.filter(item => item.name === baseName);
-//         selectedOptions = { memory: null, color: null }; // Сбрасываем выбор
-
-//         if (currentItemVariants.length === 0) {
-//              productDetailContainer.innerHTML = `<p class="error-message">Товар "${baseName}" не найден.</p>`;
-//              return;
-//         }
-        
-//         const basePrice = currentItemVariants.reduce((min, item) => Math.min(min, item.price), Infinity);
-
-//         // 2. Генерируем HTML-разметку
-//         productDetailContainer.innerHTML = `
-//             <div class="product-details-header">
-//                 <img src="placeholder.png" alt="${baseName}" class="product-image">
-//                 <h1 class="detail-title">${baseName}</h1>
-//                 <p class="detail-description">Выберите желаемые характеристики для вашего устройства.</p>
-//             </div>
-
-//             <div class="options-selection">
-//                 <div class="option-group memory-group">
-//                     <h4>Память:</h4>
-//                     <div id="detail-memory-options" class="options-container"></div>
-//                 </div>
-//                 <div class="option-group color-group">
-//                     <h4>Цвет:</h4>
-//                     <div id="detail-color-options" class="options-container"></div>
-//                 </div>
-//             </div>
-
-//             <div class="detail-footer">
-//                 <div class="detail-price-box">
-//                     <span>Цена:</span>
-//                     <span id="detail-current-price" class="detail-price">${formatPrice(basePrice)}</span>
-//                 </div>
-//                 <button id="detail-add-to-cart-btn" disabled>Добавить в корзину</button>
-//             </div>
-//         `;
-        
-//         // 3. Создаем кнопки опций и добавляем слушатели
-//         createOptionButtons('memory', 'detail-memory-options');
-//         createOptionButtons('color', 'detail-color-options');
-        
-//         // 4. Слушатель для кнопки добавления в корзину
-//         document.getElementById('detail-add-to-cart-btn').addEventListener('click', async (e) => {
-//             const finalId = e.target.dataset.finalItemId;
-//             if (!finalId) return;
-
-//             console.log(`Товар ID ${finalId} добавлен в корзину с опциями:`, selectedOptions);
-//             alert(`"${baseName}" (ID: ${finalId}) добавлен в корзину!`);
-            
-//             // TODO: Выполнить POST-запрос на API для добавления в корзину
-//         });
-
-//         updatePriceAndButton();
-//     }
-    
-//     // --- ГЛАВНАЯ СТРАНИЦА: ЗАГРУЗКА И РЕНДЕРИНГ ---
-
-//     async function loadAndRenderProducts() {
-//         productSectionsContainer.innerHTML = '<p id="loading-message">Загрузка товаров...</p>';
-        
-//         try {
-//             const [itemsResponse, categoriesResponse] = await Promise.all([
-//                 fetch(`${API_BASE_URL}/items/`),
-//                 fetch(`${API_BASE_URL}/categories/`)
-//             ]);
-            
-//             if (!itemsResponse.ok || !categoriesResponse.ok) {
-//                  throw new Error('Ошибка при получении данных с API');
-//             }
-
-//             allProducts = await itemsResponse.json(); // Сохраняем все данные
-//             const categories = await categoriesResponse.json();
-
-//             // 2. Создаем карту для удобного доступа к категориям (ID -> Объект)
-//             const categoryMap = categories.reduce((map, category) => {
-//                 map[category.id] = category;
-//                 map[category.id].base_items = {}; 
-//                 return map;
-//             }, {});
-
-//             // 3. Группируем товары по базовому имени
-//             allProducts.forEach(item => {
-//                 if (item.category_id && categoryMap[item.category_id]) {
-//                     const category = categoryMap[item.category_id];
-//                     // Сохраняем первый найденный вариант как "базовый" для отображения на главной
-//                     if (!category.base_items[item.name]) {
-//                         category.base_items[item.name] = item; 
-//                     }
-//                 }
-//             });
-
-//             productSectionsContainer.innerHTML = '';
-            
-//             // 4. Генерируем HTML для каждой категории на главной странице
-//             Object.values(categoryMap).forEach(category => {
-//                 const baseItemsArray = Object.values(category.base_items);
-                
-//                 if (baseItemsArray.length === 0) return; 
-
-//                 const section = document.createElement('section');
-//                 section.className = 'product-section';
-
-//                 const headerHtml = `<h2 class="section-title">${category.name}</h2>
-//                                     <a href="#" class="view-all-link">Все ></a>`;
-//                 section.insertAdjacentHTML('afterbegin', headerHtml);
-
-//                 const grid = document.createElement('div');
-//                 grid.className = 'product-grid';
-
-//                 baseItemsArray.forEach(item => {
-//                     grid.appendChild(createProductCard(item));
-//                 });
-
-//                 section.appendChild(grid);
-//                 productSectionsContainer.appendChild(section);
-//             });
-
-//             if (allProducts.length === 0) {
-//                  productSectionsContainer.innerHTML = '<p id="loading-message">Товары пока не добавлены.</p>';
-//             }
-            
-//             // Настраиваем слушатели для основных кнопок
-//             setupGlobalListeners();
-
-//         } catch (error) {
-//             console.error('Ошибка загрузки данных с API:', error);
-//             productSectionsContainer.innerHTML = '<p class="error-message">Не удалось загрузить товары. Проверьте соединение с API.</p>';
-//         }
-//     }
-    
-//     // --- ГЛОБАЛЬНЫЕ СЛУШАТЕЛИ ---
-
-//     function setupGlobalListeners() {
-//         // Кнопка "Назад"
-//         backBtn.addEventListener('click', showHomePage);
-        
-//         // Кнопка "Каталог"
-//         document.querySelector('.catalog-btn').addEventListener('click', () => {
-//             console.log('Кнопка "Каталог" нажата.');
-//         });
-        
-//         // Кнопка "Корзина"
-//         document.querySelector('.cart-btn').addEventListener('click', () => {
-//             console.log('Кнопка "Корзина" нажата. Открываем корзину...');
-//         });
-//     }
-
-//     // --- ЗАПУСК ---
-//     loadAndRenderProducts();
-//     showHomePage(); // По умолчанию показываем главную страницу
-// });
-// js/scripts.js
-
-// --- ФАЙЛ script.js ---
-
 document.addEventListener('DOMContentLoaded', () => {
     // ВАЖНО: Укажите правильный URL вашего FastAPI бэкенда
     const API_BASE_URL = 'http://127.0.0.1:8888/api/v1'; // ❗ Проверьте порт!
+    // НОВЫЙ ЭНДПОИНТ: Эндпоинт, который обрабатывает заказ и отправляет уведомление в Telegram
+    const ORDER_SUBMIT_ENDPOINT = `${API_BASE_URL}/orders/submit`; 
 
     // --------------------------------------------------------------------------------
     // --- ПРОВЕРЕННЫЕ ЭЛЕМЕНТЫ DOM (Используйте ID для надежности) ---
@@ -358,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentItemVariants = []; 
     let selectedOptions = { memory: null, color: null };
     let currentCategoryFilter = null; 
-    let isSearching = false; // 🌟 Флаг для отслеживания режима поиска
+    let isSearching = false; 
 
     // Заглушка изображения
     const PLACEHOLDER_IMAGE = "https://placehold.co/300x300/007AFF/ffffff?text=Product+Image";
@@ -375,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function formatPrice(price) { 
         const numericPrice = Number(price); 
-        // 💡 Улучшенная проверка на числовое значение, включая null/undefined
         if (price === null || price === undefined || isNaN(numericPrice)) { 
             console.warn("formatPrice: получено нечисловое значение:", price); 
             return 'Цена не указана'; 
@@ -678,14 +361,14 @@ document.addEventListener('DOMContentLoaded', () => {
         card.addEventListener('click', (e) => { 
             const baseName = item.name;
             
-            // Если клик был по кнопке или ее содержимому, игнорируем переход на детали
+            // Если клик был по кнопке или ее содержимому, то все равно переходим на детали, 
+            // но предотвращаем другие возможные действия
             if (e.target.closest('.add-to-cart-btn')) { 
                 e.preventDefault(); 
                 e.stopPropagation(); 
-                
             }
             
-            // Если клик был по карточке, переходим на детали
+            // Если клик был по карточке (или по кнопке)
             renderProductDetail(baseName); 
             showDetailPage(); 
         }); 
@@ -795,7 +478,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // 1. changingProperty === selectedValue (например, цвет = 'White')
             // 2. otherProperty === optionValue (например, память = '128GB')
             const isCombinationAvailable = currentItemVariants.some(item => 
-                item[changingProperty] === selectedValue && item[otherProperty] === optionValue
+                (item[changingProperty] === selectedValue || !item[changingProperty] || item[changingProperty] === '-') &&
+                (item[otherProperty] === optionValue || !item[otherProperty] || item[otherProperty] === '-')
             );
 
             if (isCombinationAvailable) {
@@ -832,28 +516,34 @@ document.addEventListener('DOMContentLoaded', () => {
         let allSelected = true; 
         
         if (selectedItem) { 
+            // Точный вариант найден
             priceSpan.textContent = formatPrice(selectedItem.price); 
             finalAddBtn.dataset.finalItemId = selectedItem.id; 
         } else { 
-            // Если комбинация не найдена:
+            // Вариант не найден (либо не выбраны опции, либо невалидная комбинация)
             
-            // Проверяем, нужно ли выбирать опции. Если да, то allSelected = false
+            // Проверяем, нужно ли выбирать опции
             if (memoryRequired && selectedOptions.memory === null) allSelected = false; 
             if (colorRequired && selectedOptions.color === null) allSelected = false; 
             
-            // Если выбран не полный, но валидный набор (например, только цвет, но память не обязательна)
-            // ИЛИ если выбрана невалидная комбинация (например, 'White' + '512GB', хотя есть только 'White' + '128GB')
-            
-            // Показываем минимальную цену от всей группы
+            // Если опции не выбраны, показываем минимальную цену
             const basePrice = currentItemVariants.reduce((min, item) => Math.min(min, item.price), Infinity); 
             priceSpan.textContent = formatPrice(basePrice); 
             finalAddBtn.dataset.finalItemId = ''; 
-            allSelected = false; // Блокируем кнопку, пока не будет найден точный вариант
+
+            // Блокируем кнопку, если нет точного соответствия (selectedItem)
+            allSelected = false; 
         } 
         
-        // Блокируем кнопку, если товар не выбран (selectedItem === null) или не выбраны обязательные опции
-        finalAddBtn.disabled = !allSelected || selectedItem === undefined; 
-        
+        // Блокируем кнопку, если товар не выбран (!selectedItem) или не выбраны все обязательные опции (!allSelected - для случая, когда нет опций)
+        finalAddBtn.disabled = !selectedItem && (memoryRequired || colorRequired || allSelected === false);
+
+        // В случае, когда опции не требуются, selectedItem будет найден сразу,
+        // allSelected останется true, и кнопка будет разблокирована.
+        if (!memoryRequired && !colorRequired && selectedItem) {
+             finalAddBtn.disabled = false;
+        }
+
         // 4. Обновление визуального состояния других опций (ключевое изменение!)
         updateVisualOptionStates('memory', 'color', 'detail-color-options');
         updateVisualOptionStates('color', 'memory', 'detail-memory-options');
@@ -1171,33 +861,109 @@ document.addEventListener('DOMContentLoaded', () => {
              checkoutBtn.addEventListener('click', showCheckoutFormPage);
         }
 
-        // Форма оформления заказа (просто заглушка)
+        // Форма оформления заказа
         if (checkoutForm) {
             checkoutForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 submitOrderBtn.disabled = true;
                 submitOrderBtn.textContent = 'Отправка...';
 
-                // Имитация задержки отправки заказа
-                await new Promise(resolve => setTimeout(resolve, 1500));
-
+                // 1. Сбор данных клиента
                 const formData = new FormData(checkoutForm);
+                const clientData = Object.fromEntries(formData);
                 
-                // В реальном приложении здесь был бы fetch к /orders/
-                console.log("ЗАКАЗ ОФОРМЛЕН (имитация). Данные клиента:", Object.fromEntries(formData));
-                console.log("Товары в заказе:", cartItems);
+                // Определяем метод доставки и адрес
+                const deliveryMethod = clientData.delivery_method;
+                let address;
 
-                showNotification('Заказ успешно оформлен!', 'success');
+                if (deliveryMethod === 'delivery') {
+                    // Если Доставка, берем адрес из поля, если пусто - null
+                    address = clientData.address || null;
+                } else {
+                    // Если Самовывоз, ставим заглушку 'Самовывоз'.
+                    address = 'Самовывоз';
+                }
+
                 
-                // Очистка корзины и возврат на главную
-                cartItems = [];
-                cartItemCount = 0;
-                updateCartCounter();
-                showHomePage();
+                // 2. Формирование полного объекта заказа (согласно OrderSubmission)
+                const orderData = {
+                    fio: clientData.fio,
+                    phone: clientData.phone,
+                    email: clientData.email,
+                    delivery_method: deliveryMethod,
 
-                submitOrderBtn.disabled = false;
-                submitOrderBtn.textContent = 'Подтвердить заказ';
-                checkoutForm.reset();
+                    // 🚀 ИСПРАВЛЕНИЕ: Опциональные поля должны быть null, если они пустые
+                    telegram_username: clientData.telegram_username || null, 
+                    comment: clientData.comment || null,
+                    address: address,
+
+                    // Товары и общая цена
+                    items: cartItems.map(item => {
+                        // 🌟 ИСПРАВЛЕНИЕ ДЛЯ 422 (повторно):
+                        // Убеждаемся, что пустые/заглушечные значения ('-' или отсутствие поля) отправляются как null.
+                        const memoryToSend = (item.memory === '-' || !item.memory) ? null : item.memory;
+                        const colorToSend = (item.color === '-' || !item.color) ? null : item.color;
+
+                        return {
+                            
+                            name: item.name,
+                            price: item.price,
+                            memory: memoryToSend,
+                            color: colorToSend
+                        }
+                    }),
+                    total_price: cartItems.reduce((sum, item) => sum + (item.price || 0), 0)
+                };
+
+                console.log("Отправка заказа на бэкенд:", orderData);
+
+                try {
+                    // 3. Отправка заказа на FastAPI
+                    const response = await fetch(ORDER_SUBMIT_ENDPOINT, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(orderData)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        // Успех (статус 201)
+                        const orderId = result.order_id;
+                        showNotification(`Заказ #${orderId} успешно оформлен!`, 'success');
+                        
+                        // Очистка корзины и возврат на главную
+                        cartItems = [];
+                        cartItemCount = 0;
+                        updateCartCounter();
+                        showHomePage();
+                        checkoutForm.reset();
+                    } else {
+                        // Ошибка со стороны сервера
+                        console.error('Ошибка оформления заказа:', result);
+                        let errorMessage = result.detail || 'Произошла ошибка при обработке заказа. Попробуйте снова.';
+                        
+                        // Если есть ошибки валидации Pydantic (Unprocessable Entity)
+                        if (response.status === 422 && result.detail && Array.isArray(result.detail)) {
+                            // Форматируем ошибки для удобного чтения
+                            errorMessage = 'Ошибка в данных: ' + result.detail.map(err => {
+                                const field = err.loc.slice(1).join('.'); // Убираем 'body' и соединяем поля
+                                return `[${field}] - ${err.msg}`;
+                            }).join('; ');
+                        }
+
+                        showNotification(errorMessage, 'error');
+                    }
+                } catch (error) {
+                    // Ошибка сети или CORS
+                    console.error("Сетевая ошибка при оформлении заказа:", error);
+                    showNotification('Ошибка подключения к серверу. Проверьте запуск бэкенда.', 'error');
+                } finally {
+                    submitOrderBtn.disabled = false;
+                    submitOrderBtn.textContent = 'Подтвердить заказ';
+                }
             });
 
             // Слушатели для полей формы (показываем/скрываем адрес)
